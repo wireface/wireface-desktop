@@ -181,13 +181,9 @@ You need Windows (built and tested on Windows 11), and at least one agent instal
 - **Speech models on first start.** They're about 650 MB, downloaded once in a window that shows the progress.
 - **Uninstalling** (Settings > Apps) removes the app and the models, and keeps your settings in its `data` folder.
 
-**From source.** You also need Python 3.11 or later, and Node.js:
-
-```
-git clone https://github.com/wireface/wireface-desktop wireface
-cd wireface
-Wireface.cmd
-```
+**From source.** Install Python 3.11 or later and Node.js. Download the
+[Desktop source ZIP](https://wireface.dev/download/wireface-desktop-0.1.3-source.zip), extract it, and run
+`Wireface.cmd` in the extracted `wireface-desktop-0.1.3` folder.
 
 The first run installs everything into the folder:
 - a Python venv;
