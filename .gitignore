@@ -1,0 +1,43 @@
+# Runtime state: settings, conversation ids, face photo, window position, browser profile, logs (private)
+/data/
+
+# Local configuration and secrets: never commit these (see profile.example.json for the shape)
+settings.json
+face.json
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+credentials*.json
+secrets*.json
+*token*.json
+.claude/settings.local.json
+.credentials.json
+
+# Installed runtimes: Electron, MediaPipe, caches (scripts\setup.ps1)
+/deps/
+node_modules/
+
+# Python
+.venv/
+.venv-*/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Logs
+*.log
+
+# Editors / OS
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Installer build (scripts\build-installer.ps1)
+/build/
+/dist/

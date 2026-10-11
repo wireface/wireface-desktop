@@ -1,0 +1,12 @@
+Wireface Desktop includes or uses:
+
+- web/face/mesh-data.js: MediaPipe canonical face model (canonical_face_model.obj), Copyright Google LLC,
+  Apache License 2.0. https://github.com/google-ai-edge/mediapipe
+- MediaPipe Tasks Vision and the face landmarker model, installed by the setup into deps/ (not included),
+  Apache License 2.0.
+- The speech models (speech recognition, voice activity, noise reduction, the voices and the lip-sync lexicon),
+  downloaded on the first run from their publishers (not included; wireface/models.py lists where from). Each comes
+  under its own licence.
+- Electron and the Python packages in requirements.txt, installed by the setup (not included), each under its own
+  licence.
+- web/face/portraits: portraits made with AI image generation for Wireface.

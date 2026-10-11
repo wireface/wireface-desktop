@@ -1,0 +1,183 @@
+/* The face window: floating (just the face, transparent) or windowed (the face in a small panel with a toolbar).
+   Colours come from the face config: --p primary, --s secondary, --bgc background. */
+:root {
+  --p: #d97757; --s: #f2c38f; --bgc: #14100c; --on-p: #14100c;
+  --text: #eceef2; --muted: #a3acb9; --faint: #6f7785;
+  --glass: color-mix(in oklab, var(--bgc) 72%, rgb(8 10 14 / .9));
+  --line: color-mix(in oklab, var(--p) 14%, rgb(255 255 255 / .08));
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  font: 13px/1.4 "Segoe UI Variable Text", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: transparent; color: var(--text); user-select: none; }
+button { font: inherit; color: inherit; cursor: pointer; }
+svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+:focus-visible { outline: 2px solid color-mix(in oklab, var(--p) 75%, #fff); outline-offset: 2px; }
+
+#panel { position: absolute; inset: 0; display: flex; flex-direction: column; }
+#stage { position: relative; flex: 1; min-height: 0; }
+#face { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+#bg { position: absolute; inset: 0; }
+/* going away: the face burns away on its canvas, everything around it fades with it (and comes back first) */
+#panel, #caption, #notice, #chat { transition: opacity .45s var(--ease, ease); }
+body.mode-windowed.away #panel { transition-delay: 1s; }
+body.away #caption, body.away #notice, body.away #chat { opacity: 0; pointer-events: none; }
+body.mode-windowed.away #panel { opacity: 0; }
+body.browser.away::after { content: "Click to bring the face back"; position: fixed; left: 0; right: 0; bottom: 18px; text-align: center;
+  color: var(--faint); font-size: 12px; animation: fadein .6s 1.4s both; }
+@keyframes fadein { from { opacity: 0; } }
+
+/* --- floating: just the face ------------------------------------------------------------------ */
+body.mode-floating #bar, body.mode-floating #tools, body.mode-floating #grip, body.mode-floating #bg { display: none; }
+body.mode-floating #chat { position: absolute; left: 10px; right: 10px; bottom: 10px; }
+
+/* --- windowed: the floating panel (the window is transparent: the padding leaves room for its shadow) ------------- */
+body.mode-windowed { padding: 10px; }
+body.mode-windowed #panel {
+  inset: 10px; border-radius: 18px; overflow: hidden;
+  background: radial-gradient(120% 60% at 50% 0%, color-mix(in oklab, var(--p) 9%, transparent), transparent 65%),
+    color-mix(in oklab, var(--bgc) 97%, transparent);
+  border: 1px solid color-mix(in oklab, var(--p) 26%, rgb(255 255 255 / .06));
+  box-shadow: 0 10px 28px rgb(0 0 0 / .5), 0 2px 6px rgb(0 0 0 / .35), inset 0 1px 0 rgb(255 255 255 / .07);
+}
+#bar { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 6px 0 8px; flex: none; cursor: grab; position: relative; z-index: 2;
+  background: linear-gradient(180deg, rgb(255 255 255 / .04), rgb(255 255 255 / 0)); border-bottom: 1px solid var(--line); }
+#bar:active { cursor: grabbing; }
+#bar .grip { width: 16px; height: 16px; color: var(--faint); stroke-width: 2.6; }
+#name { font: 600 13px/1 "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif; letter-spacing: .01em; white-space: nowrap; }
+#pill { display: inline-flex; align-items: center; gap: 6px; min-width: 0; padding: 3px 9px 3px 8px; border-radius: 99px; font-size: 11.5px; color: var(--muted);
+  background: rgb(255 255 255 / .05); border: 1px solid rgb(255 255 255 / .06); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#pill .dot { width: 7px; height: 7px; flex: none; border-radius: 50%; background: var(--muted); box-shadow: 0 0 6px currentColor; transition: background .3s; }
+#state-text { overflow: hidden; text-overflow: ellipsis; }
+#bar .spacer { flex: 1; }
+.hb { border: 0; background: none; width: 28px; height: 28px; flex: none; border-radius: 8px; display: grid; place-items: center; color: var(--muted);
+  transition: background .12s, color .12s; }
+.hb:hover { background: rgb(255 255 255 / .09); color: var(--text); }
+.hb svg { width: 16px; height: 16px; }
+#btn-quit:hover { background: #d63a46; color: #fff; }
+
+/* the toolbar: a small dock under the face */
+#tools { display: flex; justify-content: center; padding: 4px 10px 12px; flex: none; position: relative; z-index: 2; }
+.dock { display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: rgb(255 255 255 / .045); border: 1px solid rgb(255 255 255 / .07);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), 0 6px 16px -4px rgb(0 0 0 / .45); backdrop-filter: blur(10px); }
+.tb { width: 40px; height: 32px; border-radius: 10px; border: 1px solid transparent; background: none; display: grid; place-items: center; color: var(--muted);
+  transition: background .15s, color .15s, border-color .15s, box-shadow .15s, transform .1s; }
+.tb:hover { color: var(--text); background: rgb(255 255 255 / .08); }
+.tb:active:not(:disabled) { transform: scale(.94); }
+.tb.on { color: var(--on-p); border-color: color-mix(in oklab, var(--p) 70%, #000); background: linear-gradient(180deg, color-mix(in oklab, var(--p) 80%, #fff), var(--p));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 0 14px -3px color-mix(in oklab, var(--p) 75%, transparent); }
+.tb.off { color: #f87171; }
+.tb:disabled { opacity: .3; cursor: default; }
+.tb svg { width: 17px; height: 17px; }
+
+/* --- captions ------------------------------------------------------------------------------------- */
+#caption { position: absolute; left: 14px; right: 14px; bottom: 10px; z-index: 1; text-align: center; font-size: 13.5px; line-height: 1.5;
+  opacity: 0; transform: translateY(4px); transition: opacity .35s, transform .35s var(--ease); pointer-events: none; }
+#caption.show { opacity: 1; transform: none; }
+#caption .you { color: var(--muted); font-style: italic; text-shadow: 0 1px 3px rgb(0 0 0 / .9); }
+#caption .you.kept { opacity: .45; text-decoration: line-through; }
+#caption .said { padding: 3px 9px; border-radius: 9px; background: color-mix(in oklab, var(--bgc) 72%, transparent);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / .05); -webkit-box-decoration-break: clone; box-decoration-break: clone; text-shadow: 0 1px 2px rgb(0 0 0 / .6); }
+body.detector #caption { bottom: 96px; }
+
+/* --- the voice detector (Settings > Voice > Advanced): drawn by meter.js -------------------------------------------- */
+#meter { position: absolute; left: 10px; right: 10px; bottom: 10px; height: 78px; z-index: 2; pointer-events: none;
+  border-radius: 10px; background: var(--glass); border: 1px solid var(--line); backdrop-filter: blur(8px);
+  transition: opacity .45s var(--ease);
+  --vm-strong: #34c17f; --vm-some: #eaa521; --vm-low: var(--faint); --vm-bad: #f25757; --vm-would: #f7883b;
+  --vm-text: var(--text); --vm-muted: var(--muted); --vm-grid: rgb(255 255 255 / .14); --vm-deaf: var(--p); }
+#meter canvas { display: block; width: 100%; height: 100%; }
+body.away #meter { opacity: 0; }
+
+/* --- the chat box ------------------------------------------------------------------------------------ */
+#chat { display: none; gap: 6px; padding: 0 12px 12px; flex: none; position: relative; z-index: 3; }
+#chat.open { display: flex; animation: rise .22s var(--ease); }
+#chat input { flex: 1; min-width: 0; height: 36px; padding: 0 14px; border-radius: 99px; outline: none; font: inherit; color: var(--text); user-select: text;
+  border: 1px solid color-mix(in oklab, var(--p) 40%, transparent); background: var(--glass); backdrop-filter: blur(10px);
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / .35), 0 6px 18px -6px rgb(0 0 0 / .6); transition: border-color .15s, box-shadow .15s; }
+#chat input::placeholder { color: var(--faint); }
+#chat input:focus { border-color: color-mix(in oklab, var(--p) 80%, transparent);
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / .35), 0 0 0 3px color-mix(in oklab, var(--p) 28%, transparent), 0 6px 18px -6px rgb(0 0 0 / .6); }
+#chat button { width: 36px; height: 36px; flex: none; border-radius: 50%; display: grid; place-items: center; color: var(--on-p);
+  border: 1px solid color-mix(in oklab, var(--p) 70%, #000); background: linear-gradient(180deg, color-mix(in oklab, var(--p) 80%, #fff), var(--p));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 4px 12px -3px color-mix(in oklab, var(--p) 70%, transparent); transition: filter .15s, transform .1s; }
+#chat button:hover { filter: brightness(1.08); }
+#chat button:active { transform: scale(.94); }
+#chat button svg { width: 17px; height: 17px; stroke-width: 2.2; }
+
+#grip { position: absolute; right: 3px; bottom: 3px; width: 16px; height: 16px; cursor: nwse-resize; z-index: 4; opacity: .7;
+  background: linear-gradient(135deg, transparent 50%, color-mix(in srgb, var(--p) 55%, transparent) 50% 58%, transparent 58% 70%,
+    color-mix(in srgb, var(--p) 55%, transparent) 70% 78%, transparent 78%); }
+#grip:hover { opacity: 1; }
+
+/* --- drop target and notices --------------------------------------------------------------------------- */
+#drop { position: absolute; inset: 10px; z-index: 6; display: none; place-items: center; padding: 14px; border-radius: 16px; text-align: center;
+  border: 2px dashed color-mix(in oklab, var(--p) 80%, transparent); background: color-mix(in oklab, var(--bgc) 70%, rgb(0 0 0 / .5));
+  backdrop-filter: blur(4px); box-shadow: inset 0 0 40px -10px color-mix(in oklab, var(--p) 60%, transparent); }
+body.dragging #drop { display: grid; animation: fade .18s ease-out; }
+.dropcard { display: flex; flex-direction: column; align-items: center; gap: 4px; max-width: 260px; }
+.dropcard svg { width: 28px; height: 28px; color: var(--p); margin-bottom: 4px; filter: drop-shadow(0 0 6px color-mix(in oklab, var(--p) 60%, transparent)); }
+.dropcard strong { font-size: 14px; }
+.dropcard span { color: var(--muted); font-size: 12px; }
+#notice { position: absolute; left: 10px; right: 10px; top: 10px; z-index: 7; display: none; padding: 10px 12px; border-radius: 12px; font-size: 12.5px;
+  overflow-wrap: anywhere; user-select: text; background: var(--glass); backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in oklab, var(--p) 38%, transparent); box-shadow: inset 0 1px 0 rgb(255 255 255 / .06), 0 10px 26px -8px rgb(0 0 0 / .7); }
+#notice.show { display: block; animation: drop-in .25s var(--ease); }
+/* a tooltip that follows the pointer over the face (while the agent compacts its conversation) */
+#tip { position: absolute; left: 0; top: 0; z-index: 8; max-width: 220px; padding: 5px 9px; border-radius: 8px; font-size: 12px;
+  line-height: 1.35; color: var(--text, #e8ecf2); background: color-mix(in oklab, var(--bgc, #0f1218) 88%, transparent);
+  border: 1px solid rgb(255 255 255 / .14); box-shadow: 0 4px 14px rgb(0 0 0 / .45); pointer-events: none;
+  opacity: 0; transition: opacity .15s; white-space: nowrap; }
+#tip.show { opacity: 1; }
+body.away #tip { opacity: 0; }
+#notice .row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; justify-content: flex-end; }
+#notice button { min-height: 28px; padding: 3px 11px; border-radius: 8px; font-size: 12.5px; font-weight: 500; border: 1px solid rgb(255 255 255 / .14);
+  background: linear-gradient(180deg, rgb(255 255 255 / .08), rgb(255 255 255 / .03)); box-shadow: inset 0 1px 0 rgb(255 255 255 / .05); transition: background .15s, filter .15s; }
+#notice button:hover { background: linear-gradient(180deg, rgb(255 255 255 / .12), rgb(255 255 255 / .05)); }
+#notice button.primary { color: var(--on-p); font-weight: 600; border-color: color-mix(in oklab, var(--p) 70%, #000);
+  background: linear-gradient(180deg, color-mix(in oklab, var(--p) 80%, #fff), var(--p)); box-shadow: inset 0 1px 0 rgb(255 255 255 / .3); }
+#notice button.primary:hover { filter: brightness(1.08); }
+
+/* panel backgrounds (windowed) */
+#bg.gradient { background: radial-gradient(120% 90% at 50% 35%, color-mix(in srgb, var(--s) 22%, transparent), transparent 62%),
+  radial-gradient(80% 60% at 50% 100%, color-mix(in srgb, var(--p) 14%, transparent), transparent 70%); }
+#bg.solid { background: var(--bgc); }
+#bg.grid { background:
+  linear-gradient(color-mix(in srgb, var(--p) 10%, transparent) 1px, transparent 1px) 0 0 / 22px 22px,
+  linear-gradient(90deg, color-mix(in srgb, var(--p) 10%, transparent) 1px, transparent 1px) 0 0 / 22px 22px,
+  radial-gradient(90% 80% at 50% 40%, color-mix(in srgb, var(--p) 12%, transparent), transparent 70%); }
+#bg.stars { background:
+  radial-gradient(1px 1px at 12% 22%, #fff8, transparent), radial-gradient(1px 1px at 72% 14%, #fff6, transparent),
+  radial-gradient(1.5px 1.5px at 40% 70%, #fff7, transparent), radial-gradient(1px 1px at 86% 62%, #fff5, transparent),
+  radial-gradient(1px 1px at 25% 85%, #fff6, transparent), radial-gradient(1.2px 1.2px at 58% 38%, #fff4, transparent),
+  radial-gradient(100% 80% at 50% 40%, color-mix(in srgb, var(--s) 18%, transparent), transparent 70%); }
+
+/* browser fallback (no desktop shell): a normal page */
+body.browser { background: var(--bgc); }
+body.browser.mode-floating #bg { display: block; }
+body.browser #btn-float, body.browser #btn-quit, body.browser #grip { display: none; }
+
+/* --- the right-click menu in a plain browser (the desktop shell shows a native one) ------------------------------- */
+.hmenu { position: fixed; z-index: 50; min-width: 200px; max-width: min(280px, calc(100vw - 8px)); max-height: calc(100vh - 8px); overflow: auto; padding: 5px;
+  border-radius: 12px; font-size: 12.5px; background: color-mix(in oklab, var(--bgc) 55%, rgb(18 20 26 / .96)); backdrop-filter: blur(16px);
+  border: 1px solid rgb(255 255 255 / .1); box-shadow: inset 0 1px 0 rgb(255 255 255 / .06), 0 14px 36px -8px rgb(0 0 0 / .75), 0 2px 6px rgb(0 0 0 / .4);
+  animation: menu-in .14s var(--ease); transform-origin: top left; user-select: none; }
+.hitem { display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 10px 6px 8px; border: 0; border-radius: 7px; background: none; text-align: left;
+  color: var(--text); transition: background .1s; }
+.hitem::before { content: ""; width: 14px; height: 14px; flex: none; }
+.hitem.checked::before { background: var(--p); clip-path: polygon(14% 52%, 0 66%, 38% 100%, 100% 22%, 86% 8%, 38% 72%); transform: scale(.75); }
+.hitem:hover:not(:disabled), .hitem:focus-visible { background: color-mix(in oklab, var(--p) 22%, transparent); outline: none; }
+.hitem:disabled { opacity: .38; cursor: default; }
+.hsep { height: 1px; margin: 5px 6px; background: rgb(255 255 255 / .08); }
+.hhead { padding: 7px 10px 3px 30px; color: var(--faint); font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.hchips { display: flex; flex-wrap: wrap; gap: 4px; padding: 3px 8px 5px 30px; }
+.hchips .hitem { width: auto; padding: 3px 9px; border-radius: 99px; background: rgb(255 255 255 / .05); border: 1px solid rgb(255 255 255 / .07); font-size: 12px; }
+.hchips .hitem::before { display: none; }
+.hchips .hitem.checked { border-color: color-mix(in oklab, var(--p) 60%, transparent); background: color-mix(in oklab, var(--p) 18%, transparent); }
+
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } }
+@keyframes drop-in { from { opacity: 0; transform: translateY(-6px); } }
+@keyframes fade { from { opacity: 0; } }
+@keyframes menu-in { from { opacity: 0; transform: scale(.97); } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

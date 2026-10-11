@@ -1,0 +1,63 @@
+{
+  "name": "Claude",
+  "port": 0,
+  "backend": {
+    "type": "claude",
+    "cwd": "C:\\Users\\you\\projects\\something",
+    "model": null,
+    "skip_permissions": false,
+    "permission_mode": "default",
+    "auto_start": true,
+    "compact_at": 80,
+    "options": {}
+  },
+  "voice": {
+    "on": true,
+    "listening": false,
+    "mode": "realtime",
+    "realtime": {
+      "provider": "gemini",
+      "gemini": {
+        "model": "gemini-3.8-live",
+        "voice": "Puck",
+        "api_key_env": "GEMINI_API_KEY"
+      },
+      "openai": {
+        "model": "gpt-realtime-2.1",
+        "voice": "marin",
+        "api_key_env": "OPENAI_API_KEY"
+      },
+      "narration": "normal",
+      "persona": "self",
+      "barge_in": false
+    },
+    "hearing": {
+      "name_interrupt": true,
+      "denoise": true,
+      "focus": true,
+      "surprise": false,
+      "show_detector": false,
+      "judge": {
+        "on": false,
+        "model": "~typesafe/jev-latest",
+        "api_key_env": "OPENROUTER_API_KEY",
+        "unsure": "hold"
+      }
+    },
+    "engine": "auto",
+    "local": {
+      "engine": "pocket",
+      "voice": "bria"
+    },
+    "elevenlabs": {
+      "voice_id": null,
+      "model_id": "eleven_flash_v2_5",
+      "api_key_env": "ELEVENLABS_API_KEY"
+    }
+  },
+  "room": {
+    "name": null,
+    "aliases": [],
+    "lead": "first"
+  }
+}

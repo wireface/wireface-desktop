@@ -1,0 +1,232 @@
+{
+  "about": "MCP servers and skills the panel's Tools tab recommends (wireface/harness_tools.py). Versions are pinned, as backends/claude.py pins Playwright's, so npx and uvx don't ask the registry on every start. Checked 2026-10-07. Wireface's own skills are in skills/.",
+  "mcp": [
+    {
+      "id": "context7",
+      "title": "Context7",
+      "description": "Up-to-date documentation and code examples for thousands of libraries, looked up while the agent works.",
+      "why": "Answers about the version you use, not the one the model remembers.",
+      "remote": "https://mcp.context7.com/mcp",
+      "auth": "No sign-in. A free key from context7.com raises the rate limit.",
+      "by": "Upstash",
+      "licence": "MIT",
+      "homepage": "https://github.com/upstash/context7"
+    },
+    {
+      "id": "deepwiki",
+      "title": "DeepWiki",
+      "description": "Ask questions about any public GitHub repository and read its generated documentation.",
+      "why": "\"How does this library do X?\" without cloning it.",
+      "remote": "https://mcp.deepwiki.com/mcp",
+      "auth": "No sign-in. Public repositories only.",
+      "by": "Cognition",
+      "licence": "Free hosted service",
+      "homepage": "https://docs.devin.ai/work-with-devin/deepwiki-mcp"
+    },
+    {
+      "id": "microsoft-learn",
+      "title": "Microsoft Learn",
+      "description": "Searches and reads Microsoft's official documentation and code samples: Windows, .NET, Azure, PowerShell, Office.",
+      "why": "Current answers about Windows and Microsoft tools, straight from the source.",
+      "remote": "https://learn.microsoft.com/api/mcp",
+      "auth": "No sign-in.",
+      "by": "Microsoft",
+      "licence": "Free hosted service",
+      "homepage": "https://github.com/MicrosoftDocs/mcp"
+    },
+    {
+      "id": "playwright",
+      "title": "Playwright browser",
+      "description": "Drives a browser: opens pages, reads them, clicks, fills in forms and takes screenshots.",
+      "why": "Lets the agent use and test web pages. Claude Code behind the face has it already (Wireface's browser).",
+      "npx": "@playwright/mcp@0.0.83",
+      "builtin_for": [
+        "claude"
+      ],
+      "builtin_as": "browser",
+      "needs": [
+        {
+          "label": "Node.js",
+          "command": "npx",
+          "url": "https://nodejs.org/",
+          "hint": "Install Node.js first: it won't start without it."
+        },
+        {
+          "label": "Chrome",
+          "chrome": true,
+          "url": "https://www.google.com/chrome/",
+          "hint": "Install Chrome first: it drives Chrome."
+        }
+      ],
+      "auth": "No sign-in.",
+      "by": "Microsoft",
+      "licence": "Apache-2.0",
+      "homepage": "https://github.com/microsoft/playwright-mcp"
+    },
+    {
+      "id": "chrome-devtools",
+      "title": "Chrome DevTools",
+      "description": "Inspects a live Chrome: console messages, network requests, performance traces and screenshots.",
+      "why": "For debugging web apps: the agent sees what DevTools shows you.",
+      "npx": "chrome-devtools-mcp@1.10.1",
+      "args": [
+        "--no-usage-statistics"
+      ],
+      "needs": [
+        {
+          "label": "Node.js 20.19 or later",
+          "command": "npx",
+          "url": "https://nodejs.org/",
+          "hint": "Install Node.js first: it won't start without it."
+        },
+        {
+          "label": "Chrome",
+          "chrome": true,
+          "url": "https://www.google.com/chrome/",
+          "hint": "Install Chrome first: it drives Chrome."
+        }
+      ],
+      "auth": "No sign-in.",
+      "by": "Google (Chrome DevTools team)",
+      "licence": "Apache-2.0",
+      "homepage": "https://github.com/ChromeDevTools/chrome-devtools-mcp"
+    },
+    {
+      "id": "memory",
+      "title": "Memory",
+      "description": "A small knowledge graph the agent can write to and read back: people, projects and facts to remember between conversations.",
+      "why": "Things you tell it once (names, preferences, how a project fits together) are there next time.",
+      "npx": "@modelcontextprotocol/server-memory@2026.8.31",
+      "env": {
+        "MEMORY_FILE_PATH": "{home}/.mcp-memory/memory.jsonl"
+      },
+      "needs": [
+        {
+          "label": "Node.js",
+          "command": "npx",
+          "url": "https://nodejs.org/",
+          "hint": "Install Node.js first: it won't start without it."
+        }
+      ],
+      "auth": "No sign-in. Kept in a file in your home folder (.mcp-memory).",
+      "by": "MCP reference servers",
+      "licence": "MIT / Apache-2.0",
+      "homepage": "https://github.com/modelcontextprotocol/servers/tree/main/src/memory"
+    },
+    {
+      "id": "fetch",
+      "title": "Fetch",
+      "description": "Fetches a web page and turns it into readable text.",
+      "why": "Web reading for agents without it (Claude Code has its own WebFetch).",
+      "uvx": "mcp-server-fetch@2026.8.18",
+      "needs": [
+        {
+          "label": "uv",
+          "command": "uvx",
+          "url": "https://docs.astral.sh/uv/getting-started/installation/",
+          "hint": "Install uv first: Fetch won't start without it."
+        }
+      ],
+      "auth": "No sign-in. It can reach addresses on your own network, so use it with care.",
+      "by": "MCP reference servers",
+      "licence": "MIT",
+      "homepage": "https://github.com/modelcontextprotocol/servers/tree/main/src/fetch"
+    },
+    {
+      "id": "github",
+      "title": "GitHub",
+      "description": "Issues, pull requests, code search, releases and Actions on GitHub.",
+      "why": "\"What's open on my repo?\" and \"open a pull request for this\" by voice.",
+      "remote": "https://api.githubcopilot.com/mcp/",
+      "bearer_env": "GITHUB_PERSONAL_ACCESS_TOKEN",
+      "claude_plugin": "github@claude-plugins-official",
+      "needs": [
+        {
+          "label": "GitHub token",
+          "env": "GITHUB_PERSONAL_ACCESS_TOKEN",
+          "url": "https://github.com/settings/personal-access-tokens",
+          "hint": "Put a GitHub personal access token in the GITHUB_PERSONAL_ACCESS_TOKEN environment variable first: it can't sign in without one."
+        }
+      ],
+      "auth": "The token is read from the environment variable, never written into the agent's config.",
+      "by": "GitHub",
+      "licence": "MIT",
+      "homepage": "https://github.com/github/github-mcp-server"
+    }
+  ],
+  "skills": [
+    {
+      "id": "webapp-testing",
+      "title": "Web app testing",
+      "description": "Tests a local web app with Playwright: starts its server, drives the pages, takes screenshots and reads the browser's logs.",
+      "needs": [
+        {
+          "label": "Git",
+          "command": "git",
+          "url": "https://git-scm.com/downloads"
+        }
+      ],
+      "repo": "https://github.com/anthropics/skills",
+      "path": "skills/webapp-testing",
+      "by": "Anthropic",
+      "licence": "Apache-2.0",
+      "homepage": "https://github.com/anthropics/skills/tree/main/skills/webapp-testing"
+    },
+    {
+      "id": "mcp-builder",
+      "title": "MCP builder",
+      "description": "Guides building a good MCP server in Python or TypeScript: designing its tools, then testing and evaluating them.",
+      "needs": [
+        {
+          "label": "Git",
+          "command": "git",
+          "url": "https://git-scm.com/downloads"
+        }
+      ],
+      "repo": "https://github.com/anthropics/skills",
+      "path": "skills/mcp-builder",
+      "by": "Anthropic",
+      "licence": "Apache-2.0",
+      "homepage": "https://github.com/anthropics/skills/tree/main/skills/mcp-builder"
+    },
+    {
+      "id": "skill-creator",
+      "title": "Skill creator",
+      "description": "Helps write a new skill (\"make a skill for how we do releases\"), then test and improve it.",
+      "needs": [
+        {
+          "label": "Git",
+          "command": "git",
+          "url": "https://git-scm.com/downloads"
+        }
+      ],
+      "repo": "https://github.com/anthropics/skills",
+      "path": "skills/skill-creator",
+      "by": "Anthropic",
+      "licence": "Apache-2.0",
+      "homepage": "https://github.com/anthropics/skills/tree/main/skills/skill-creator"
+    }
+  ],
+  "own": {
+    "answer-on-screen": {
+      "title": "Answer on screen",
+      "description": "Puts commands, code, links and long lists in a file on screen, and says the gist out loud."
+    },
+    "dictation-notes": {
+      "title": "Dictation notes",
+      "description": "\"Take a note\", \"add it to my to-do list\": tidies what you dictate into dated notes, to-dos and drafts."
+    },
+    "review-aloud": {
+      "title": "Review aloud",
+      "description": "Reviews your changes, speaks the verdict and the top findings, and writes the full review to a file."
+    },
+    "standup-briefing": {
+      "title": "Stand-up briefing",
+      "description": "A sixty-second spoken stand-up from the repository: done, in progress, blocked."
+    },
+    "walk-me-through": {
+      "title": "Walk me through",
+      "description": "Guides you through a task on your own PC, one spoken step at a time, waiting between steps."
+    }
+  }
+}
